@@ -13,7 +13,10 @@ public class AlignedAllocTest {
         MemorySegment PFN_aligned_alloc = lookup.findOrThrow("aligned_alloc");
         MemorySegment PFN_free = lookup.findOrThrow("free");
 
-        MemorySegment segment = (MemorySegment) MH_aligned_alloc.invokeExact(PFN_aligned_alloc, 1024L, 1024L * 4L);
+        final long alignment = 1024L;
+        final long size = 1024L * 4L;
+        MemorySegment segment = ((MemorySegment) MH_aligned_alloc.invokeExact(PFN_aligned_alloc, alignment, size))
+                .reinterpret(size);
         System.out.println(segment);
         segment.set(ValueLayout.JAVA_INT, 0, 42);
         System.out.println(segment.get(ValueLayout.JAVA_INT, 0));
